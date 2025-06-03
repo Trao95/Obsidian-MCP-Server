@@ -9,20 +9,20 @@ This guide provides step-by-step instructions for setting up an **Obsidian Model
 
 ## Table of Contents
 
--   [Why Use an Obsidian MCP Server?](#why-use-an-obsidian-mcp-server)
--   [Prerequisites](#prerequisites)
--   [Step-by-Step Setup Guide](#step-by-step-setup-guide)
-    -   [Phase 1: Prepare Your Obsidian Vault](#phase-1-prepare-your-obsidian-vault)
-    -   [Phase 2: Configure Claude Desktop to Launch the MCP Server](#phase-2-configure-claude-desktop-to-launch-the-mcp-server)
--   [Troubleshooting Common Issues](#troubleshooting-common-issues)
-    -   [No `mcp-debug.log` file is generated](#no-mcp-debuglog-file-is-generated)
-    -   [`claude_desktop_config.json` Syntax Errors](#claude_desktop_configjson-syntax-errors)
-    -   [Only an Existing MCP Server (e.g., Blender) Appears](#only-an-existing-mcp-server-eg-blender-appears)
-    -   [API Key or Vault Path Errors](#api-key-or-vault-path-errors)
-    -   [Server Error in Logs (e.g., "Address already in use")](#server-error-in-logs-eg-address-already-in-use)
-    -   [General Connectivity Issues / Claude Not Picking Up Config](#general-connectivity-issues--claude-not-picking-up-config)
--   [Contributing](#contributing)
--   [License](#license)
+* [Why Use an Obsidian MCP Server?](#why-use-an-obsidian-mcp-server)
+* [Prerequisites](#prerequisites)
+* [Step-by-Step Setup Guide](#step-by-step-setup-guide)
+    * [Phase 1: Prepare Your Obsidian Vault](#phase-1-prepare-your-obsidian-vault)
+    * [Phase 2: Configure Claude Desktop to Launch the MCP Server](#phase-2-configure-claude-desktop-to-launch-the-mcp-server)
+* [Troubleshooting Common Issues](#troubleshooting-common-issues)
+    * [No `mcp-debug.log` file is generated](#no-mcp-debuglog-file-is-generated)
+    * [`claude_desktop_config.json` Syntax Errors](#claude_desktop_configjson-syntax-errors)
+    * [Only an Existing MCP Server (e.g., Blender) Appears](#only-an-existing-mcp-server-eg-blender-appears)
+    * [API Key or Vault Path Errors](#api-key-or-vault-path-errors)
+    * [Server Error in Logs (e.g., "Address already in use")](#server-error-in-logs-eg-address-already-in-use)
+    * [General Connectivity Issues / Claude Not Picking Up Config](#general-connectivity-issues--claude-not-picking-up-config)
+* [Contributing](#contributing)
+* [License](#license)
 
 ---
 
@@ -42,11 +42,11 @@ This integration is particularly useful when you want a standalone AI applicatio
 
 Before you start, ensure you have the following:
 
-1.  **Obsidian Installed:** An active Obsidian vault you wish to integrate with AI.
-2.  **Node.js (Version 20 or higher):** The MCP server runs on Node.js.
+* **Obsidian Installed:** An active Obsidian vault you wish to integrate with AI.
+* **Node.js (Version 20 or higher):** The MCP server runs on Node.js.
     * **Check your version:** Open PowerShell and run: `node -v`
     * If you don't have Node.js or it's an older version, download and install the latest LTS (Long Term Support) version from [nodejs.org](https://nodejs.org/).
-3.  **Claude Desktop:** The AI application you'll be connecting.
+* **Claude Desktop:** The AI application you'll be connecting.
 
 ---
 
@@ -91,7 +91,7 @@ In this phase, you'll configure Claude Desktop to automatically launch and manag
       "mcpServers": {
         "obsidian": { // You can name this anything, "obsidian" is descriptive.
           "command": "npx",
-          "args": ["-y", "obsidian-mcp", "C:/Users/tanma/OneDrive/Documents/TVault"],
+          "args": ["-y", "obsidian-mcp", "YOUR_OBSIDIAN_VAULT_PATH_HERE"],
           "env": {
             "OBSIDIAN_API_KEY": "YOUR_ACTUAL_OBSIDIAN_API_KEY_HERE"
           }
@@ -104,7 +104,9 @@ In this phase, you'll configure Claude Desktop to automatically launch and manag
     }
     ```
     * **Key points for the configuration above:**
-        * Replace `C:/Users/tanma/OneDrive/Documents/TVault` with the **exact, full, absolute path to your Obsidian vault folder on your system.** Using forward slashes (`/`) is recommended for paths within JSON strings on Windows, but double backslashes (`\\`) are also valid (e.g., `"C:\\Users\\tanma\\OneDrive\\Documents\\TVault"`).
+        * Replace `YOUR_OBSIDIAN_VAULT_PATH_HERE` with the **exact, full, absolute path to your Obsidian vault folder on your system.**
+            * *Example for Windows:* `"C:/Users/YourUser/Documents/MyVault"` (using forward slashes, generally recommended in JSON)
+            * *Alternatively (Windows):* `"C:\\Users\\YourUser\\Documents\\MyVault"` (using double backslashes)
         * Replace `YOUR_ACTUAL_OBSIDIAN_API_KEY_HERE` with the **exact API key** you copied from Phase 1, step 9. This is a long string of characters.
     * **Save the `claude_desktop_config.json` file.**
 4.  **Validate JSON Syntax:**
@@ -121,59 +123,44 @@ Once Claude Desktop starts, it should now be able to communicate with your Obsid
 
 Here are solutions to common problems encountered during setup:
 
-### No `mcp-debug.log` file is generated
+* **No `mcp-debug.log` file is generated:**
+    * This indicates Claude Desktop isn't even attempting to launch the MCP server or process its output.
+    * **Verify `claude_desktop_config.json` Location:** Ensure the file is *exactly* named `claude_desktop_config.json` and is located *directly* in `%APPDATA%\Claude\`. No subfolders.
+    * **Verify `claude_desktop_config.json` Syntax:** A single syntax error (e.g., missing comma, brace, or quote) will prevent Claude from reading the entire file. Use `jsonlint.com` to validate the entire file.
+    * **Perform a Hard Restart of Claude Desktop:** Use Task Manager (Ctrl+Shift+Esc) to "End task" for all Claude processes, then relaunch.
 
-This indicates Claude Desktop isn't even attempting to launch the MCP server or process its output.
+* **`claude_desktop_config.json` Syntax Errors:**
+    * **Use a JSON Validator:** Always copy your entire `claude_desktop_config.json` content and paste it into `jsonlint.com` after every change. It will pinpoint exact syntax errors.
+    * **Missing Commas:** If you have multiple servers in `mcpServers` (e.g., `blender` and `obsidian`), each entry (except the very last one) must be followed by a comma.
 
-* **Verify `claude_desktop_config.json` Location:** Ensure the file is *exactly* named `claude_desktop_config.json` and is located *directly* in `%APPDATA%\Claude\`. No subfolders.
-* **Verify `claude_desktop_config.json` Syntax:** A single syntax error (e.g., missing comma, brace, or quote) will prevent Claude from reading the entire file. Use `jsonlint.com` to validate the entire file.
-* **Perform a Hard Restart of Claude Desktop:** Use Task Manager (Ctrl+Shift+Esc) to "End task" for all Claude processes, then relaunch.
-
-### `claude_desktop_config.json` Syntax Errors
-
-* **Use a JSON Validator:** Always copy your entire `claude_desktop_config.json` content and paste it into `jsonlint.com` after every change. It will pinpoint exact syntax errors.
-* **Missing Commas:** If you have multiple servers in `mcpServers` (e.g., `blender` and `obsidian`), each entry (except the very last one) must be followed by a comma.
-
-    ```json
-    "server1": { ... },  <-- COMMA HERE
-    "server2": { ... }
-    ```
-
-### Only an Existing MCP Server (e.g., Blender) Appears
-
-This happens when you've either overwritten your existing configuration or introduced a syntax error that prevents the new entry from being parsed.
-
-* **Ensure Proper JSON Structure:** When adding a new server, make sure it's a new key-value pair within the `mcpServers` object, separated by a comma from the preceding entry. Refer to the example in [Phase 2, step 3](#phase-2-configure-claude-desktop-to-launch-the-mcp-server).
-
-### API Key or Vault Path Errors
-
-Even if `mcp-debug.log` is generated, these errors will often appear within it.
-
-* **API Key:**
-    * Double-check that the `OBSIDIAN_API_KEY` in your `claude_desktop_config.json` exactly matches the key generated in Obsidian's "Local REST API" plugin settings.
-    * Ensure there are no extra spaces or missed characters during copy-pasting.
-* **Vault Path:**
-    * Verify the path `C:/Users/tanma/OneDrive/Documents/TVault` (or your specific path) is the **exact, absolute path** to your Obsidian vault folder.
-    * Confirm correct slash usage: `C:/path/to/vault` (forward slashes) or `C:\\path\\to\\vault` (double backslashes) in JSON strings.
-
-### Server Error in Logs (e.g., "Address already in use")
-
-If `mcp-debug.log` shows the MCP server attempting to start but failing with an error like "Address already in use" on port `27123`:
-
-* Another application (or a previous instance of the MCP server) is already using that port.
-* **Solution:** You can try to configure the `obsidian-mcp` server to use a different port.
-    * In `claude_desktop_config.json`, modify the `args` array for the `obsidian` server:
         ```json
-        "args": ["-y", "obsidian-mcp", "C:/Users/tanma/OneDrive/Documents/TVault", "--port", "27124"],
+        "server1": { ... },  <-- COMMA HERE
+        "server2": { ... }
         ```
-    * Then, perform a hard restart of Claude Desktop.
 
-### General Connectivity Issues / Claude Not Picking Up Config
+* **Only an Existing MCP Server (e.g., Blender) Appears:**
+    * This happens when you've either overwritten your existing configuration or introduced a syntax error that prevents the new entry from being parsed.
+    * **Ensure Proper JSON Structure:** When adding a new server, make sure it's a new key-value pair within the `mcpServers` object, separated by a comma from the preceding entry. Refer to the example in [Phase 2, step 3](#phase-2-configure-claude-desktop-to-launch-the-mcp-server).
 
-If everything else seems correct but Claude still doesn't recognize the server:
+* **API Key or Vault Path Errors:**
+    * Even if `mcp-debug.log` is generated, these errors will often appear within it.
+    * **API Key:** Double-check that the `OBSIDIAN_API_KEY` in your `claude_desktop_config.json` exactly matches the key generated in Obsidian's "Local REST API" plugin settings. Ensure there are no extra spaces or missed characters during copy-pasting.
+    * **Vault Path:** Verify the path `YOUR_OBSIDIAN_VAULT_PATH_HERE` is the **exact, absolute path** to your Obsidian vault folder. Confirm correct slash usage: `C:/path/to/vault` (forward slashes) or `C:\\path\\to\\vault` (double backslashes) in JSON strings.
 
-* **Hard Restart Claude Desktop:** As discovered during troubleshooting, sometimes a standard restart isn't enough. Use Task Manager (Ctrl+Shift+Esc) to ensure all "Claude" processes are ended before relaunching.
-* **Reinstall Claude Desktop (Last Resort):** If all else fails, consider uninstalling and reinstalling Claude Desktop.
+* **Server Error in Logs (e.g., "Address already in use"):**
+    * If `mcp-debug.log` shows the MCP server attempting to start but failing with an error like "Address already in use" on port `27123`:
+    * Another application (or a previous instance of the MCP server) is already using that port.
+    * **Solution:** You can try to configure the `obsidian-mcp` server to use a different port.
+        * In `claude_desktop_config.json`, modify the `args` array for the `obsidian` server:
+            ```json
+            "args": ["-y", "obsidian-mcp", "YOUR_OBSIDIAN_VAULT_PATH_HERE", "--port", "27124"],
+            ```
+        * Then, perform a hard restart of Claude Desktop.
+
+* **General Connectivity Issues / Claude Not Picking Up Config:**
+    * If everything else seems correct but Claude still doesn't recognize the server:
+    * **Hard Restart Claude Desktop:** As discovered during troubleshooting, sometimes a standard restart isn't enough. Use Task Manager (Ctrl+Shift+Esc) to ensure all "Claude" processes are ended before relaunching.
+    * **Reinstall Claude Desktop (Last Resort):** If all else fails, consider uninstalling and reinstalling Claude Desktop.
 
 ---
 
