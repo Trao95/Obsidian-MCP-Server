@@ -170,6 +170,12 @@ If you encounter new issues, have improvements, or find clearer ways to explain 
 
 ---
 
+## Additional troubleshooting/important note
+
+Sometimes, Claude cannot connect to the server, if this issue happens, end all tasks of Claude in Taskmanager and reopen it and it will work.
+
+---
+
 ## License
 
 This guide is provided under the [MIT License](LICENSE).
